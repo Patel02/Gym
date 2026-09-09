@@ -1,0 +1,265 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  MEMBER
+  ADMIN
+  REFEREE
+  MEET_DIRECTOR
+}
+
+enum Permission {
+  MANAGE_MEETS
+  MANAGE_MEMBERS
+  MANAGE_RECORDS
+  LIVE_SCORING
+  CMS_PUBLISH
+}
+
+enum MeetStatus {
+  APPROVED
+  PENDING_PAYMENT
+  WAITLISTED
+  REJECTED
+}
+
+enum Division {
+  OPEN
+  JUNIOR
+  SUB_JUNIOR
+  MASTER_1
+  MASTER_2
+  MASTER_3
+  MASTER_4
+}
+
+enum EquipmentType {
+  RAW
+  EQUIPPED
+  CLASSIC_RAW
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum LiftType {
+  SQUAT
+  BENCH
+  DEADLIFT
+  TOTAL
+}
+
+enum MembershipPlan {
+  ANNUAL_ATHLETE
+  LIFETIME
+  COACH_OFFICIAL
+}
+
+enum WeightClass {
+  WC_47
+  WC_52
+  WC_57
+  WC_59
+  WC_63
+  WC_66
+  WC_69
+  WC_74
+  WC_76
+  WC_83
+  WC_84
+  WC_84_PLUS
+  WC_93
+  WC_105
+  WC_120
+  WC_120_PLUS
+}
+
+model User {
+  id            String             @id @default(cuid())
+  name          String?
+  email         String?            @unique
+  password      String?
+  image         String?
+  role          UserRole           @default(MEMBER)
+  permissions   Permission[]
+  profile       Profile?
+  memberships   Membership[]
+  registrations MeetRegistration[]
+  results       Result[]
+  auditLogs     AuditLog[]         @relation("AdminAction")
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([email])
+}
+
+model EmailOtp {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Profile {
+  id          String      @id @default(cuid())
+  userId      String      @unique
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gender      Gender
+  weightClass WeightClass
+  clubId      String?
+  club        Club?       @relation(fields: [clubId], references: [id])
+}
+
+model Club {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  state    String
+  athletes Profile[]
+
+  @@index([state])
+}
+
+model Membership {
+  id            String         @id @default(cuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planType      MembershipPlan
+  amountPaid    Float
+  status        String
+  cardNumber    String         @unique
+  startDate     DateTime       @default(now())
+  endDate       DateTime
+
+  @@index([status, endDate])
+}
+
+model Event {
+  id                String             @id @default(cuid())
+  title             String
+  date              DateTime
+  location          String
+  status            String
+  entryFee          Float
+  registrationOpen  DateTime
+  registrationClose DateTime
+  maxAthletes       Int
+  meetDirector      String
+  posterUrl         String?
+  registrations     MeetRegistration[]
+  results           Result[]
+
+  @@index([status, date])
+}
+
+model MeetRegistration {
+  id         String        @id @default(cuid())
+  userId     String
+  eventId    String
+  division   Division      @default(OPEN)
+  equipment  EquipmentType @default(RAW)
+  status     MeetStatus    @default(PENDING_PAYMENT)
+  paymentRef String?
+  bodyweight Float?
+  lotNumber  Int?
+  user       User          @relation(fields: [userId], references: [id])
+  event      Event         @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+  @@index([eventId, status])
+}
+
+model Result {
+  id           String   @id @default(cuid())
+  userId       String
+  eventId      String
+  squat1       Float?
+  squat2       Float?
+  squat3       Float?
+  bestSquat    Float?
+  bench1       Float?
+  bench2       Float?
+  bench3       Float?
+  bestBench    Float?
+  deadlift1    Float?
+  deadlift2    Float?
+  deadlift3    Float?
+  bestDeadlift Float?
+  total        Float?
+  ipfGlPoints  Float?
+  rank         Int?
+  version      Int      @default(1)
+  user         User     @relation(fields: [userId], references: [id])
+  event        Event    @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+  @@index([total, ipfGlPoints])
+}
+
+model NationalRecord {
+  id           String        @id @default(cuid())
+  liftType     LiftType
+  weightClass  WeightClass
+  division     Division
+  equipment    EquipmentType
+  gender       Gender
+  weight       Float
+  athleteId    String
+  meetId       String
+  dateSet      DateTime
+
+  @@unique([liftType, weightClass, division, equipment, gender])
+  @@index([weightClass, gender])
+}
+
+model Certificate {
+  id               String   @id @default(cuid())
+  verificationCode String   @unique
+  userId           String
+  eventId          String
+  issueDate        DateTime @default(now())
+
+  @@index([verificationCode])
+}
+
+model News {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  content       String
+  featuredImage String?
+  published     Boolean  @default(false)
+  publishedAt   DateTime @default(now())
+
+  @@index([published, publishedAt])
+}
+
+model Circular {
+  id          String   @id @default(cuid())
+  title       String
+  fileUrl     String
+  publishedAt DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  admin      User     @relation("AdminAction", fields: [adminId], references: [id])
+  action     String
+  entityType String
+  entityId   String
+  details    String
+  ipAddress  String?
+  userAgent  String?
+  timestamp  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([adminId, timestamp])
+}
