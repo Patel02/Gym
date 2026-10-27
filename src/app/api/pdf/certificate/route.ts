@@ -31,14 +31,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Sign in to access this certificate." }, { status: 401 });
     }
 
+    const certificateWhere = code
+      ? { verificationCode: code }
+      : certificateId
+        ? { id: certificateId }
+        : userId && eventId
+          ? { userId, eventId }
+          : null;
+    if (!certificateWhere) {
+      return NextResponse.json({ error: "Provide a valid certificate lookup." }, { status: 400 });
+    }
+
     const cert = await prisma.certificate.findFirst({
-      where: {
-        OR: [
-          code ? { verificationCode: code } : undefined,
-          certificateId ? { id: certificateId } : undefined,
-          userId && eventId ? { userId, eventId } : undefined,
-        ].filter(Boolean) as any[],
-      },
+      where: certificateWhere,
     });
 
     if (!cert) {
@@ -53,7 +58,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "You cannot access another member's certificate." }, { status: 403 });
     }
 
-    const [user, event, result] = await Promise.all([
+    const [user, event, result, registration] = await Promise.all([
       prisma.user.findUnique({
         where: { id: cert.userId },
         include: { profile: true },
@@ -65,6 +70,14 @@ export async function GET(req: NextRequest) {
         where: {
           userId: cert.userId,
           eventId: cert.eventId,
+        },
+      }),
+      prisma.meetRegistration.findUnique({
+        where: {
+          userId_eventId: {
+            userId: cert.userId,
+            eventId: cert.eventId,
+          },
         },
       }),
     ]);
@@ -87,9 +100,9 @@ export async function GET(req: NextRequest) {
       medalText = `TOP PLACEMENT (#${rank} OVERALL)`;
     }
 
-    const division = (result as any)?.division || user?.profile?.gender || "Open";
-    const weightClass = (result as any)?.weightClass || user?.profile?.weightClass || "Open";
-    const equipment = (result as any)?.equipment || "Raw / Classic";
+    const division = registration?.division || user?.profile?.gender || "Open";
+    const weightClass = user?.profile?.weightClass || "Open";
+    const equipment = registration?.equipment || "Raw / Classic";
 
     const security = generateSecuritySignature({
       id: cert.id,
@@ -135,8 +148,8 @@ export async function GET(req: NextRequest) {
         "Cache-Control": "public, max-age=60",
       },
     });
-  } catch (err: any) {
-    console.error("Certificate PDF generation endpoint error:", err);
-    return NextResponse.json({ error: err.message || "Failed to generate certificate PDF" }, { status: 500 });
+  } catch (error) {
+    console.error("Certificate PDF generation endpoint error:", error);
+    return NextResponse.json({ error: "Failed to generate certificate PDF." }, { status: 500 });
   }
 }

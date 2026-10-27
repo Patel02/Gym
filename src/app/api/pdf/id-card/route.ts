@@ -30,14 +30,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Sign in to access this ID card." }, { status: 401 });
     }
 
+    const membershipWhere = cardNumber
+      ? { cardNumber }
+      : membershipId
+        ? { id: membershipId }
+        : userId
+          ? { userId }
+          : null;
+    if (!membershipWhere) {
+      return NextResponse.json({ error: "Provide a valid ID card lookup." }, { status: 400 });
+    }
+
     const membership = await prisma.membership.findFirst({
-      where: {
-        OR: [
-          cardNumber ? { cardNumber } : undefined,
-          membershipId ? { id: membershipId } : undefined,
-          userId ? { userId } : undefined,
-        ].filter(Boolean) as any[],
-      },
+      where: membershipWhere,
       include: {
         user: {
           include: {
@@ -101,8 +106,8 @@ export async function GET(req: NextRequest) {
         "Cache-Control": "public, max-age=60",
       },
     });
-  } catch (err: any) {
-    console.error("PDF generation endpoint error:", err);
-    return NextResponse.json({ error: err.message || "Failed to generate PDF" }, { status: 500 });
+  } catch (error) {
+    console.error("PDF generation endpoint error:", error);
+    return NextResponse.json({ error: "Failed to generate PDF." }, { status: 500 });
   }
 }

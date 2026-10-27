@@ -344,11 +344,10 @@ export function StreamOverlayLowerThird({
     payloadData: any
   ) => {
     try {
-      await fetch("/api/live/broadcast", {
+      const response = await fetch("/api/live/broadcast", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-broadcast-key": "WPI_LIVE_BROADCAST_SECURE_KEY_2026",
         },
         body: JSON.stringify({
           type,
@@ -356,6 +355,9 @@ export function StreamOverlayLowerThird({
           data: payloadData,
         }),
       });
+      if (!response.ok) {
+        console.warn("Simulation trigger was rejected:", response.status);
+      }
     } catch (err) {
       console.warn("Simulation trigger failed:", err);
     }

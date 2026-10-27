@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
-    "setup:superadmin": "node scripts/setup-super-admin.mjs"
+    "setup:superadmin": "node scripts/setup-super-admin.mjs",
+    "sync": "node scripts/git-sync.mjs",
+    "push": "node scripts/git-sync.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",

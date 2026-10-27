@@ -7,10 +7,13 @@ export interface SecuritySignatureResult {
   issuedAt: string;
 }
 
-const FEDERATION_SIGNING_SALT =
-  process.env.AUTH_SECRET ||
-  process.env.NEXTAUTH_SECRET ||
-  "wpi-powerlifting-federation-tamper-evident-ratified-key-2026";
+function getFederationSigningSalt() {
+  const signingSalt = process.env.AUTH_SECRET;
+  if (!signingSalt) {
+    throw new Error("AUTH_SECRET must be configured to sign federation credentials.");
+  }
+  return signingSalt;
+}
 
 /**
  * Generate cryptographic SHA-256 anti-forgery digital signature
@@ -30,7 +33,7 @@ export function generateSecuritySignature(data: {
     `USER:${data.userId}`,
     `CODE:${data.code}`,
     `META:${data.metadata ?? "RATIFIED"}`,
-    `SALT:${FEDERATION_SIGNING_SALT}`,
+    `SALT:${getFederationSigningSalt()}`,
   ].join("|");
 
   const fullHash = crypto

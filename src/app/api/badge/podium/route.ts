@@ -22,13 +22,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Sign in to access a member-specific badge." }, { status: 401 });
     }
 
+    const certificateWhere = code
+      ? { verificationCode: code }
+      : certificateId
+        ? { id: certificateId }
+        : null;
+    if (!certificateWhere) {
+      return NextResponse.json({ error: "Provide a valid certificate lookup." }, { status: 400 });
+    }
     const cert = await prisma.certificate.findFirst({
-      where: {
-        OR: [
-          code ? { verificationCode: code } : undefined,
-          certificateId ? { id: certificateId } : undefined,
-        ].filter(Boolean) as any[],
-      },
+      where: certificateWhere,
     });
 
     if (!cert) {
@@ -90,7 +93,8 @@ export async function GET(req: NextRequest) {
         "Cache-Control": "public, max-age=3600, s-maxage=86400",
       },
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to generate badge" }, { status: 500 });
+  } catch (error) {
+    console.error("Podium badge generation failed:", error);
+    return NextResponse.json({ error: "Failed to generate badge." }, { status: 500 });
   }
 }

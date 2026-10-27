@@ -22,13 +22,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Sign in to access a member-specific badge." }, { status: 401 });
     }
 
+    const membershipWhere = cardNumber
+      ? { cardNumber }
+      : userId
+        ? { userId }
+        : null;
+    if (!membershipWhere) {
+      return NextResponse.json({ error: "Provide a valid membership lookup." }, { status: 400 });
+    }
     const membership = await prisma.membership.findFirst({
-      where: {
-        OR: [
-          cardNumber ? { cardNumber } : undefined,
-          userId ? { userId } : undefined,
-        ].filter(Boolean) as any[],
-      },
+      where: membershipWhere,
       include: {
         user: {
           include: {
@@ -80,7 +83,8 @@ export async function GET(req: NextRequest) {
         "Cache-Control": "public, max-age=3600, s-maxage=86400",
       },
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to generate badge" }, { status: 500 });
+  } catch (error) {
+    console.error("Athlete badge generation failed:", error);
+    return NextResponse.json({ error: "Failed to generate badge." }, { status: 500 });
   }
 }
