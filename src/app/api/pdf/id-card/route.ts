@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireUserRole } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import { generateAthleteIdCardPdf } from "@/lib/pdf/id-card-pdf";
 import { generateSecuritySignature } from "@/lib/pdf/security-signer";
@@ -11,12 +12,22 @@ export async function GET(req: NextRequest) {
     const cardNumber = searchParams.get("cardNumber");
     const membershipId = searchParams.get("membershipId");
     const userId = searchParams.get("userId");
+    const requester = await requireUserRole(
+      "MEMBER",
+      "ADMIN",
+      "SUPER_ADMIN",
+      "REFEREE",
+      "MEET_DIRECTOR",
+    );
 
     if (!cardNumber && !membershipId && !userId) {
       return NextResponse.json(
         { error: "Provide cardNumber, membershipId, or userId" },
         { status: 400 }
       );
+    }
+    if ((membershipId || userId) && !requester) {
+      return NextResponse.json({ error: "Sign in to access this ID card." }, { status: 401 });
     }
 
     const membership = await prisma.membership.findFirst({
@@ -43,6 +54,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Membership pass not found" }, { status: 404 });
     }
 
+    const mayViewPrivateData = Boolean(
+      requester &&
+        (requester.id === membership.userId ||
+          requester.role === "ADMIN" ||
+          requester.role === "SUPER_ADMIN"),
+    );
+    if ((requester && !mayViewPrivateData) || ((membershipId || userId) && !mayViewPrivateData)) {
+      return NextResponse.json({ error: "You cannot access another member's ID card." }, { status: 403 });
+    }
+
     const security = generateSecuritySignature({
       id: membership.id,
       type: "ID_CARD",
@@ -59,7 +80,7 @@ export async function GET(req: NextRequest) {
     const pdfBuffer = await generateAthleteIdCardPdf({
       cardNumber: membership.cardNumber,
       athleteName: membership.user.name || "Athlete",
-      email: membership.user.email,
+      email: mayViewPrivateData ? membership.user.email : "",
       gender: membership.user.profile?.gender || "OPEN",
       weightClass: membership.user.profile?.weightClass || "OPEN",
       clubState: clubOrState,

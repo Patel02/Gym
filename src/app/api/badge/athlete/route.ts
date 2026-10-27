@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireUserRole } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import { generateAthleteBadgeSvg } from "@/lib/pdf/digital-badges";
 import { generateSecuritySignature } from "@/lib/pdf/security-signer";
@@ -10,9 +11,15 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const cardNumber = searchParams.get("cardNumber");
     const userId = searchParams.get("userId");
+    const requester = userId
+      ? await requireUserRole("MEMBER", "ADMIN", "SUPER_ADMIN", "REFEREE", "MEET_DIRECTOR")
+      : null;
 
     if (!cardNumber && !userId) {
       return NextResponse.json({ error: "Provide cardNumber or userId" }, { status: 400 });
+    }
+    if (userId && !requester) {
+      return NextResponse.json({ error: "Sign in to access a member-specific badge." }, { status: 401 });
     }
 
     const membership = await prisma.membership.findFirst({
@@ -36,6 +43,15 @@ export async function GET(req: NextRequest) {
 
     if (!membership) {
       return NextResponse.json({ error: "Membership not found" }, { status: 404 });
+    }
+    if (
+      userId &&
+      requester &&
+      membership.userId !== requester.id &&
+      requester.role !== "ADMIN" &&
+      requester.role !== "SUPER_ADMIN"
+    ) {
+      return NextResponse.json({ error: "You cannot access another member's badge." }, { status: 403 });
     }
 
     const security = generateSecuritySignature({

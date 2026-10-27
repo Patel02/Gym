@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireUserRole } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import { generateCompetitionCertificatePdf } from "@/lib/pdf/certificate-pdf";
 import { generateSecuritySignature } from "@/lib/pdf/security-signer";
@@ -12,12 +13,22 @@ export async function GET(req: NextRequest) {
     const certificateId = searchParams.get("certificateId");
     const userId = searchParams.get("userId");
     const eventId = searchParams.get("eventId");
+    const requester = await requireUserRole(
+      "MEMBER",
+      "ADMIN",
+      "SUPER_ADMIN",
+      "REFEREE",
+      "MEET_DIRECTOR",
+    );
 
     if (!code && !certificateId && !(userId && eventId)) {
       return NextResponse.json(
         { error: "Provide code, certificateId, or userId + eventId" },
         { status: 400 }
       );
+    }
+    if ((certificateId || userId || eventId) && !requester) {
+      return NextResponse.json({ error: "Sign in to access this certificate." }, { status: 401 });
     }
 
     const cert = await prisma.certificate.findFirst({
@@ -32,6 +43,14 @@ export async function GET(req: NextRequest) {
 
     if (!cert) {
       return NextResponse.json({ error: "Certificate not found" }, { status: 404 });
+    }
+    if (
+      (certificateId || userId || eventId) &&
+      cert.userId !== requester?.id &&
+      requester?.role !== "ADMIN" &&
+      requester?.role !== "SUPER_ADMIN"
+    ) {
+      return NextResponse.json({ error: "You cannot access another member's certificate." }, { status: 403 });
     }
 
     const [user, event, result] = await Promise.all([

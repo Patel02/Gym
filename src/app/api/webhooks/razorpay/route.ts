@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 // RAZORPAY PRODUCTION WEBHOOK — HMAC-SHA256 Signature Verification
 // ─────────────────────────────────────────────────────────────────────────────
 
-const RAZORPAY_WEBHOOK_SECRET =
-  process.env.RAZORPAY_WEBHOOK_SECRET || "wpi_razorpay_webhook_secret_2026";
+const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET;
 
 function verifyRazorpaySignature(rawBody: string, signatureHeader: string): boolean {
+  if (!RAZORPAY_WEBHOOK_SECRET || !signatureHeader) return false;
   const expectedSig = crypto
     .createHmac("sha256", RAZORPAY_WEBHOOK_SECRET)
     .update(rawBody)
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   if (!signatureHeader) {
     // In development, allow unsigned requests for testing
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === "production" || RAZORPAY_WEBHOOK_SECRET) {
       console.error("[Razorpay Webhook] Missing signature header");
       return NextResponse.json({ error: "Missing signature" }, { status: 401 });
     }

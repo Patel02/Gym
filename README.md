@@ -38,6 +38,7 @@ Required for the corresponding features:
 | `UPLOADTHING_TOKEN` | UploadThing server credentials |
 | `SUPERADMIN_SETUP_KEY` | One-time setup key required by the first-super-admin page |
 | `STRIPE_*`, `RAZORPAY_*` | Optional payment provider credentials and webhook secrets |
+| `BROADCAST_FEED_SECRET` | Optional secret for external live-broadcast controllers |
 
 Keep `.env` and deployment secrets private. If a real secret has been exposed, revoke and rotate it in its provider dashboard; replacing it in the local file alone is not sufficient.
 

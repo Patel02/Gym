@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireUserRole } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import { generatePodiumBadgeSvg } from "@/lib/pdf/digital-badges";
 import { generateSecuritySignature } from "@/lib/pdf/security-signer";
@@ -10,9 +11,15 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const code = searchParams.get("code") || searchParams.get("verificationCode");
     const certificateId = searchParams.get("certificateId");
+    const requester = certificateId
+      ? await requireUserRole("MEMBER", "ADMIN", "SUPER_ADMIN", "REFEREE", "MEET_DIRECTOR")
+      : null;
 
     if (!code && !certificateId) {
       return NextResponse.json({ error: "Provide code or certificateId" }, { status: 400 });
+    }
+    if (certificateId && !requester) {
+      return NextResponse.json({ error: "Sign in to access a member-specific badge." }, { status: 401 });
     }
 
     const cert = await prisma.certificate.findFirst({
@@ -26,6 +33,15 @@ export async function GET(req: NextRequest) {
 
     if (!cert) {
       return NextResponse.json({ error: "Certificate not found" }, { status: 404 });
+    }
+    if (
+      certificateId &&
+      requester &&
+      cert.userId !== requester.id &&
+      requester.role !== "ADMIN" &&
+      requester.role !== "SUPER_ADMIN"
+    ) {
+      return NextResponse.json({ error: "You cannot access another member's badge." }, { status: 403 });
     }
 
     const [user, event, result] = await Promise.all([
