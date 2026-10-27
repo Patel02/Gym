@@ -1,0 +1,144 @@
+{
+  "events": [
+    {
+      "id": "meet-1789369859947",
+      "title": "Asian & Pacific Powerlifting Championship Selection Trials 2026",
+      "category": "Equipped & Classic Open",
+      "dates": "July 2026",
+      "city": "Mumbai, Maharashtra",
+      "venue": "Bandra Kurla Complex Sports Arena",
+      "status": "REGISTRATION OPEN",
+      "statusColor": "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
+      "prizePool": "₹5,00,000",
+      "divisions": [
+        "Senior Men",
+        "Senior Women"
+      ],
+      "daysLeft": 45,
+      "entryFee": "₹2,500",
+      "circularUrl": "/circulars",
+      "isFeaturedOnHome": true
+    },
+    {
+      "id": "meet-1789369461284",
+      "title": "All India Inter-State Powerlifting Trophy 2026",
+      "category": "Equipped & Classic Open",
+      "dates": "July 2026",
+      "city": "Chandigarh & Mohali",
+      "venue": "Sector 42 Indoor Sports Complex",
+      "status": "REGISTRATION OPEN",
+      "statusColor": "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
+      "prizePool": "₹5,00,000",
+      "divisions": [
+        "Senior Men",
+        "Senior Women"
+      ],
+      "daysLeft": 45,
+      "entryFee": "₹2,500",
+      "circularUrl": "/circulars",
+      "isFeaturedOnHome": true
+    },
+    {
+      "id": "national-seniors-2026",
+      "title": "National Senior Powerlifting Championship 2026",
+      "category": "Equipped & Classic Open",
+      "dates": "July 18 – 22, 2026",
+      "city": "Bengaluru, Karnataka",
+      "venue": "Kanteerava Indoor Stadium",
+      "status": "REGISTRATION OPEN",
+      "statusColor": "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
+      "prizePool": "₹10,00,000",
+      "divisions": [
+        "Senior Men (59kg – 120kg+)",
+        "Senior Women (47kg – 84kg+)"
+      ],
+      "daysLeft": 124,
+      "entryFee": "₹2,500",
+      "circularUrl": "/circulars",
+      "isFeaturedOnHome": true
+    },
+    {
+      "id": "sub-junior-junior-2026",
+      "title": "National Sub-Junior & Junior Championships 2026",
+      "category": "Youth & Rising Stars",
+      "dates": "September 10 – 14, 2026",
+      "city": "New Delhi",
+      "venue": "Thyagaraj Indoor Sports Complex",
+      "status": "UPCOMING",
+      "statusColor": "bg-gym-primary/20 text-gym-primary border-gym-primary/40",
+      "prizePool": "₹6,50,000",
+      "divisions": [
+        "Sub-Junior (14–18 Yrs)",
+        "Junior (19–23 Yrs)"
+      ],
+      "daysLeft": 178,
+      "entryFee": "₹2,000",
+      "circularUrl": "/circulars",
+      "isFeaturedOnHome": true
+    },
+    {
+      "id": "masters-nationals-2026",
+      "title": "National Masters Powerlifting Championship 2026",
+      "category": "Masters I, II, III & IV",
+      "dates": "November 05 – 08, 2026",
+      "city": "Pune, Maharashtra",
+      "venue": "Shree Shiv Chhatrapati Sports Complex, Balewadi",
+      "status": "UPCOMING",
+      "statusColor": "bg-blue-500/20 text-blue-400 border-blue-500/40",
+      "prizePool": "₹5,00,000",
+      "divisions": [
+        "Masters I (40–49)",
+        "Masters II (50–59)",
+        "Masters III & IV (60+)"
+      ],
+      "daysLeft": 234,
+      "entryFee": "₹2,200",
+      "circularUrl": "/circulars",
+      "isFeaturedOnHome": false
+    }
+  ],
+  "announcements": [
+    {
+      "id": "cmu0xwaro000678a6u6d3vj9p",
+      "date": "SEP 14, 2026",
+      "title": "IPF Official Technical Rulebook 2026-2027 (Platform & Equipment)",
+      "type": "rule",
+      "fileUrl": "https://www.powerlifting.sport/fileadmin/ipf/data/rules/technical-rules/english/IPF_Technical_Rules_Book_2026.pdf"
+    },
+    {
+      "id": "cmu0xumxr000378a63tpc149k",
+      "date": "SEP 14, 2026",
+      "title": "fficial Federation Document",
+      "type": "rule",
+      "fileUrl": "/uploads/circulars/1789371936897-India-Powerlifting-Records.pdf"
+    },
+    {
+      "id": "cmu0xnid5000178a6ovw10jjl",
+      "date": "SEP 14, 2026",
+      "title": "National Senior Powerlifting Championship 2026 Official Circular & Entry Form",
+      "type": "rule",
+      "fileUrl": "https://powerlifting-india.org/circulars/national-seniors-2026.pdf"
+    },
+    {
+      "id": 1,
+      "date": "SEP 12, 2026",
+      "title": "WADA Anti-Doping Guidelines Updated for 2026-27",
+      "type": "alert",
+      "fileUrl": "/circulars"
+    },
+    {
+      "id": 2,
+      "date": "AUG 28, 2026",
+      "title": "Technical Rulebook Updates: Paused Bench Press Standards",
+      "type": "rule",
+      "fileUrl": "/circulars"
+    },
+    {
+      "id": 3,
+      "date": "AUG 15, 2026",
+      "title": "National Referee Certification Clinic - Registrations Open",
+      "type": "info",
+      "fileUrl": "/circulars"
+    }
+  ]
+}

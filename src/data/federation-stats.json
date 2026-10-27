@@ -1,0 +1,26 @@
+[
+  {
+    "id": "years",
+    "value": "50",
+    "suffix": "+",
+    "label": "Years of Heritage"
+  },
+  {
+    "id": "athletes",
+    "value": "10,000",
+    "suffix": "+",
+    "label": "Registered Athletes"
+  },
+  {
+    "id": "medals",
+    "value": "900",
+    "suffix": "+",
+    "label": "International Medals"
+  },
+  {
+    "id": "states",
+    "value": "37",
+    "suffix": "+",
+    "label": "Affiliated State Units"
+  }
+]

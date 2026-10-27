@@ -1,11 +1,10 @@
 import type { NextAuthConfig } from "next-auth";
 
 export default {
+  session: { strategy: "jwt" },
+  pages: { signIn: "/login" },
   providers: [],
   callbacks: {
-    authorized({ auth }) {
-      return Boolean(auth);
-    },
     jwt({ token, user }) {
       if (user?.role) token.role = user.role;
       return token;

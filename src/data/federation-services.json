@@ -1,0 +1,111 @@
+{
+  "hero": {
+    "badge": "Federation Governance & Portfolios",
+    "title": "Federation Services",
+    "subtitle": "& Accreditation",
+    "desc": "Supporting athletes, state bodies, certified officials, and strength gyms nationwide through structured accreditation, sanctioning, referee clinics, and equipment logistics."
+  },
+  "services": [
+    {
+      "id": "athlete-license",
+      "title": "Athlete Sanctioning & National IPF ID",
+      "category": "Individual Competitor Service",
+      "desc": "Issuance of the official digital National Athlete Card, permanent IPF identification number, anti-doping verification, and verified inclusion in the national ranking database.",
+      "features": [
+        "Official National Competitor License valid across all states",
+        "Automatic inclusion in the live national leaderboard & records eligibility",
+        "NADA clean sport profile and digital verification QR code",
+        "Annual renewal and category transfer management"
+      ],
+      "timeline": "Processed within 3 to 5 business days",
+      "waMessage": "Hi Coaches Akash & Tanvi, I would like to apply for official Athlete Sanctioning and National IPF ID."
+    },
+    {
+      "id": "referee-clinics",
+      "title": "National Referee Certification Clinics",
+      "category": "Technical Officials & Judging",
+      "desc": "Comprehensive certification courses and examinations for National Category 1 & Category 2 Referees, covering rulebook mastery, hand signals, platform protocol, and practical evaluation.",
+      "features": [
+        "Intensive 2-day technical theory & case-study workshop",
+        "Live platform practical judging under Senior International Referees",
+        "Official IPF referee blazer patch, rulebook, and digital credential",
+        "Eligibility to officiate at State, Zonal, and National Championships"
+      ],
+      "timeline": "Conducted bi-annually prior to National Championships",
+      "waMessage": "Hi Coaches Akash & Tanvi, I am interested in enrolling in the upcoming National Referee Certification Clinic."
+    },
+    {
+      "id": "state-affiliation",
+      "title": "State Powerlifting Body Affiliation",
+      "category": "State Governance & Chapters",
+      "desc": "Official recognition and charter for State Powerlifting Associations, empowering state bodies to organize certified state championships, dispatch national delegates, and govern district clubs.",
+      "features": [
+        "Annual state governing charter and voting assembly delegation",
+        "Official sanctioning rights for district & state championship meets",
+        "Dispatch of national certified technical delegates and jury members",
+        "Direct pipeline for state athlete qualification to Nationals"
+      ],
+      "timeline": "Annual charter renewal every January",
+      "waMessage": "Hi Coaches Akash & Tanvi, we would like to consult regarding State Association affiliation and meet sanctioning."
+    },
+    {
+      "id": "club-accreditation",
+      "title": "Gym & Club Official Affiliation",
+      "category": "Commercial & Private Clubs",
+      "desc": "Accreditation for private fitness centers, CrossFit boxes, and strength gyms looking to become officially certified federation training academies and represent lifters at meets.",
+      "features": [
+        "Official 'Federation Certified Training Center' plaque and digital seal",
+        "Right to register and field club teams in national club championships",
+        "Equipment compliance audit and platform safety certification",
+        "Special discounts on federation coaching seminars and workshops"
+      ],
+      "timeline": "Yearly affiliation with platform inspection",
+      "waMessage": "Hi Coaches Akash & Tanvi, our gym would like to apply for official Federation Club Affiliation."
+    },
+    {
+      "id": "equipment-rental",
+      "title": "Championship Equipment & Platform Rental",
+      "category": "Event Logistics & Hardware",
+      "desc": "Turnkey competition hardware rental for authorized state bodies, universities, and corporate powerlifting meets, including calibrated plates, IPF combo racks, and electronic scoring boards.",
+      "features": [
+        "4m x 4m competition platform with heavy-duty carpet and shock dampening",
+        "Certified IPF combo racks and 20kg competition bars",
+        "Full 450kg+ calibrated steel plate set accurate to within ±10g",
+        "Electronic 3-light referee scoring system and projector display software"
+      ],
+      "timeline": "Available on booking with 30-day advance notice",
+      "waMessage": "Hi Coaches Akash & Tanvi, I would like to inquire about championship platform and equipment rental for our upcoming meet."
+    },
+    {
+      "id": "coaching-seminars",
+      "title": "Coaching Workshops & Masterclasses",
+      "category": "Coach Development",
+      "desc": "Accredited masterclasses led by Head Coaches Akash & Tanvi on powerlifting biomechanics, programming, peaking methodologies, and youth strength development.",
+      "features": [
+        "Hands-on bar path and kinematic video analysis",
+        "Peaking cycles and water cut protocols without strength depletion",
+        "Continuing education certificate in strength & conditioning",
+        "Direct Q&A with elite national lifters and specialists"
+      ],
+      "timeline": "Quarterly workshops across major metro centers",
+      "waMessage": "Hi Coaches Akash & Tanvi, I would like details on upcoming Federation Coaching Masterclasses."
+    },
+    {
+      "id": "service-1789375221540",
+      "title": "Corporate Powerlifting & Strength League",
+      "category": "Corporate Wellness",
+      "desc": "Custom strength leagues and inter-departmental powerlifting meets organized directly on-site for corporate campuses.",
+      "features": [
+        "Official certificate issued"
+      ],
+      "timeline": "Processed within 3 to 5 business days",
+      "waMessage": "Hi Coaches Akash & Tanvi, I would like to apply for this federation service."
+    }
+  ],
+  "cta": {
+    "tag": "Secretariat Helpdesk",
+    "title": "Need Assistance With Affiliation or Licenses?",
+    "desc": "Connect directly with the Federation Administration on WhatsApp for expedited processing of state sanction letters, referee clinic forms, or club membership badges.",
+    "waMessage": "Hi Federation Secretariat, I need assistance regarding federation services and registration."
+  }
+}

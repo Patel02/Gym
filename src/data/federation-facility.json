@@ -1,0 +1,109 @@
+{
+  "hero": {
+    "badge": "High-Performance Platform Lab",
+    "title": "National Training",
+    "subtitle": "Facility & Platforms",
+    "desc": "India's premier strength destination designed specifically for Olympic-grade IPF powerlifting, elite hypertrophy preparation, and advanced athlete recovery.",
+    "location": "Bengaluru & New Delhi Centers",
+    "hours": "Open Mon–Sat: 6:00 AM – 10:00 PM"
+  },
+  "highlights": [
+    {
+      "id": "platforms",
+      "title": "8 Competition Platforms",
+      "subtitle": "Built to IPF Standards",
+      "desc": "4m x 4m heavy-duty hardwood lifting platforms with vibration-absorbing high-density rubber drop zones, eliminating rebound deflection.",
+      "tag": "Available For Daily Athlete Training"
+    },
+    {
+      "id": "combo-racks",
+      "title": "Eleiko & Rogue Combo Racks",
+      "subtitle": "Calibrated Competition Hardware",
+      "desc": "Every platform features official IPF-approved combo racks with tilt-in uprights and precision lever jacks for instant bench and squat height changes.",
+      "tag": "Available For Daily Athlete Training"
+    },
+    {
+      "id": "calibrated-steel",
+      "title": "4,000+ KG Calibrated Steel",
+      "subtitle": "Verified within ±10g Tolerance",
+      "desc": "Full sets of competition-colored calibrated steel discs (25kg Red, 20kg Blue, 15kg Yellow, 10kg Green, change plates down to 0.25kg).",
+      "tag": "Available For Daily Athlete Training"
+    },
+    {
+      "id": "specialty-bars",
+      "title": "Specialty Bar Arsenal",
+      "subtitle": "Targeted Strength Development",
+      "desc": "Safety Squat Bars (SSB), Buffalo Bars, Cambered Squat Bars, Swiss Multi-Grip Bars, Trap Bars, and competition deadlift bars.",
+      "tag": "Available For Daily Athlete Training"
+    },
+    {
+      "id": "recovery-suite",
+      "title": "Sports Science & Recovery Suite",
+      "subtitle": "Rapid Muscle Restoration",
+      "desc": "Cold plunge tub at 3°C, pneumatic leg compression boots, percussion massage therapy, and infrared recovery conditioning.",
+      "tag": "Available For Daily Athlete Training"
+    },
+    {
+      "id": "head-coaches",
+      "title": "Head Coaches On Deck",
+      "subtitle": "Akash & Tanvi Daily Presence",
+      "desc": "Hands-on bar path analysis, real-time command practice, and customized warm-up supervision for visiting lifters and national squad members.",
+      "tag": "Available For Daily Athlete Training"
+    }
+  ],
+  "passes": [
+    {
+      "id": "single-day",
+      "name": "Single Day Pass",
+      "price": "₹499",
+      "period": "Single Session Access",
+      "desc": "Ideal for traveling lifters, form check visits, or heavy test day simulation.",
+      "features": [
+        "Full access to competition platforms",
+        "Calibrated plates & IPF combo rack",
+        "Cold plunge post-workout access"
+      ],
+      "badge": "Flexible",
+      "popular": false,
+      "waMessage": "Hi Coaches Akash & Tanvi, I would like to book a Single Day Training Pass at the National Facility."
+    },
+    {
+      "id": "monthly-athlete",
+      "name": "Monthly Athlete Pass",
+      "price": "₹2,999",
+      "period": "Per Month",
+      "desc": "Unlimited monthly platform access for competitive athletes and dedicated lifters.",
+      "features": [
+        "Unlimited training 6 days a week",
+        "Dedicated chalk, platform & specialty bar access",
+        "Bi-weekly technique review with Coach Akash",
+        "Recovery suite access discounts"
+      ],
+      "badge": "Most Popular",
+      "popular": true,
+      "waMessage": "Hi Coaches Akash & Tanvi, I would like to enroll for the Monthly Athlete Training Pass at the facility."
+    },
+    {
+      "id": "team-pass",
+      "name": "Competition Camp / Team Pass",
+      "price": "₹7,999",
+      "period": "Per Week (Up to 5 Lifters)",
+      "desc": "Complete private platform booking for gym teams, state squads, or meet peaking squads.",
+      "features": [
+        "Exclusive competition platform reservation",
+        "Full electronic referee 3-light mock meet simulation",
+        "Attempt selection guidance with Coaches Akash & Tanvi",
+        "Team recovery suite sessions"
+      ],
+      "badge": "Team Peaking",
+      "popular": false,
+      "waMessage": "Hi Coaches Akash & Tanvi, our team would like to book a Competition Peaking Camp at the facility."
+    }
+  ],
+  "cta": {
+    "tag": "Schedule A Visit & Platform Tour",
+    "title": "Want to Tour the Facility in Person?",
+    "desc": "Meet Coaches Akash & Tanvi at the platform lab for an in-person orientation, equipment trial, and discussion of your competition goals.",
+    "waMessage": "Hi Coaches Akash & Tanvi, I would like to schedule an in-person visit and platform trial at the National Facility."
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "WPI Federation Platform",
+  "short_name": "WPI Referee",
+  "description": "World Powerlifting India – Official Federation Platform. Referee decisions, live scoring, and meet management — online or offline.",
+  "start_url": "/referee/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#FF5500",
+  "orientation": "any",
+  "categories": ["sports", "productivity"],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/wpi-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/wpi-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Referee Dashboard",
+      "short_name": "Platform",
+      "description": "Open live referee platform console",
+      "url": "/referee/dashboard",
+      "icons": [{ "src": "/wpi-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Live Scoreboard",
+      "short_name": "Live",
+      "description": "View live meet scoreboard",
+      "url": "/live",
+      "icons": [{ "src": "/wpi-logo.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/live_arena.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "WPI Live Arena Scoreboard"
+    },
+    {
+      "src": "/live_scoreboard.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile Scoreboard View"
+    }
+  ]
+}

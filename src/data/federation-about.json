@@ -1,0 +1,101 @@
+{
+  "hero": {
+    "badge": "OFFICIAL NATIONAL GOVERNING BODY • ESTD. 1975",
+    "title": "About Indian Powerlifting Federation",
+    "subtitle": "Powerlifting India — Apex Governing Body Recognized by MYAS (Govt. of India) & Indian Olympic Association",
+    "description": "Founded in 1975 with the motto to improve national health through the Iron Games. Formally recognized in 1979 by the Ministry of Youth Affairs & Sports (Govt. of India) and the Indian Olympic Association (IOA), and affiliated to the International Powerlifting Federation (IPF) and Asian Powerlifting Federation (APF)."
+  },
+  "mission": {
+    "motto": "Health and Strength for the Nation Through the Iron Games",
+    "missionStatement": "To govern, promote, and advance the sport of drug-free powerlifting across India. We provide standardized competition platforms, train nationally certified referees, and prepare elite athletes for international glory.",
+    "visionStatement": "To establish India as a dominant global force on the IPF World and Asian platforms while upholding 100% clean, drug-tested athletic sportsmanship.",
+    "pillars": [
+      {
+        "id": "drug-free",
+        "title": "100% Clean Sport",
+        "desc": "Uncompromising adherence to WADA and NADA testing codes across in-competition and out-of-competition testing pools.",
+        "icon": "ShieldCheck"
+      },
+      {
+        "id": "standards",
+        "title": "Calibrated Platform Standards",
+        "desc": "Olympic-calibrated Eleiko competition bars, cast steel discs, and certified combo racks for uncompromised safety and precision.",
+        "icon": "Zap"
+      },
+      {
+        "id": "pathway",
+        "title": "Grassroots to World Podium",
+        "desc": "Systematic qualification pipeline progressing from District, State, and National Championships to Asian and World representation.",
+        "icon": "Trophy"
+      },
+      {
+        "id": "governance",
+        "title": "Democratic Governance",
+        "desc": "Fair, transparent administration powered by 37 affiliated State Associations and 6 Central Public Sector Board units.",
+        "icon": "Landmark"
+      }
+    ]
+  },
+  "timeline": [
+    {
+      "year": "1975",
+      "title": "Foundation of Indian Powerlifting Federation",
+      "desc": "Pioneering strength athletes and sports administrators came together to establish a unified national governing body for powerlifting in India."
+    },
+    {
+      "year": "1979",
+      "title": "Formal Govt. of India & IOA Recognition",
+      "desc": "Formally granted National Sports Federation (NSF) status by the Ministry of Youth Affairs & Sports (Govt. of India) and affiliated with the Indian Olympic Association."
+    },
+    {
+      "year": "1984",
+      "title": "Unbroken Historic World Record",
+      "desc": "Sri E.S. Bhaskaran lifted an astonishing 260 KG Deadlift in the 52 KG bodyweight division at the IPF World Championships — a monumental record in Indian sports history."
+    },
+    {
+      "year": "2000s",
+      "title": "Expansion Across 37 State Units",
+      "desc": "National membership expanded to all Indian States, Union Territories, and 6 Institutional Central Office Boards including Indian Railways and Police."
+    },
+    {
+      "year": "2010s-Present",
+      "title": "International Glory & 900+ Medals",
+      "desc": "India successfully hosted 23 International Asian and Commonwealth Championships, won over 900 international medals, and secured 7 Arjuna Awards and 1 Dronacharya Award."
+    }
+  ],
+  "honors": [
+    {
+      "id": "arjuna",
+      "count": "7",
+      "title": "Arjuna Awardees",
+      "desc": "Conferred by the President of India to legendary federation athletes for outstanding international sports achievement."
+    },
+    {
+      "id": "dronacharya",
+      "count": "1",
+      "title": "Dronacharya Award",
+      "desc": "India's highest national coaching accolade awarded for sustained international podium coaching."
+    },
+    {
+      "id": "medals",
+      "count": "900+",
+      "title": "International Medals",
+      "desc": "Gold, Silver, and Bronze medals captured by Indian athletes across IPF World, Asian, and Commonwealth meets."
+    },
+    {
+      "id": "hosted",
+      "count": "23",
+      "title": "International Meets Hosted",
+      "desc": "Asian and Commonwealth Powerlifting Championships successfully organized on Indian soil with global acclaim."
+    }
+  ],
+  "governance": {
+    "headquarters": "Indian Powerlifting Federation National Secretariat, Alappuzha, Kerala, India",
+    "secretariatEmail": "secgen@powerliftingindia.net",
+    "secretariatPhone": "+91 477 2244 550",
+    "affiliatedUnitsCount": "37 States & 6 Central Office Boards",
+    "registeredAthletes": "10,000+ Men & Women Lifters",
+    "presidentOffice": "Office of the National President, Indian Powerlifting Federation",
+    "secgenOffice": "Office of the Secretary General, Alappuzha, Kerala"
+  }
+}

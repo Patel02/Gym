@@ -11,6 +11,7 @@ enum UserRole {
   ADMIN
   REFEREE
   MEET_DIRECTOR
+  SUPER_ADMIN
 }
 
 enum Permission {
@@ -87,8 +88,10 @@ model User {
   email         String?            @unique
   password      String?
   image         String?
+  phone         String?
   role          UserRole           @default(MEMBER)
   permissions   Permission[]
+  isActive      Boolean            @default(true)
   profile       Profile?
   memberships   Membership[]
   registrations MeetRegistration[]
@@ -96,8 +99,91 @@ model User {
   auditLogs     AuditLog[]         @relation("AdminAction")
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
+  nationalRecords NationalRecord[]
+  deletionRequest DeletionRequest?
+  subscription  FederationSubscription?
+  branding      TenantBranding?
+  refereeProfile RefereeProfile?
 
   @@index([email])
+}
+
+enum SubscriptionPlan {
+  FREE
+  MONTHLY
+  SIX_MONTH
+  YEARLY
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  PENDING_APPROVAL
+  SUSPENDED
+}
+
+model FederationSubscription {
+  id                      String             @id @default(cuid())
+  userId                  String             @unique
+  user                    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationName        String             @default("State Powerlifting Association")
+  planType                SubscriptionPlan   @default(MONTHLY)
+  status                  SubscriptionStatus @default(ACTIVE)
+  startDate               DateTime           @default(now())
+  endDate                 DateTime
+  monthlyEventQuota       Int                @default(4)
+  extraEventCredits       Int                @default(0)
+  pricePaid               Float              @default(2999)
+  currency                String             @default("INR")
+  contactPhone            String?
+  paymentUtr              String?
+  reactivationRequestedAt DateTime?
+  reactivationNotes       String?
+  reactivationPlanType    SubscriptionPlan?
+  approvedBy              String?
+  approvedAt              DateTime?
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+
+  @@index([status, endDate])
+  @@index([userId])
+}
+
+model TenantBranding {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationName String   @default("State Powerlifting Association")
+  tagline          String?  @default("Affiliated Member State Body")
+  slug             String?  @unique
+  logoUrl          String?
+  primaryColor     String   @default("#e6501b")
+  secondaryColor   String   @default("#0a0a0a")
+  sealText         String?  @default("OFFICIAL RATIFIED SEAL")
+  presidentName    String?  @default("President")
+  presidentSignUrl String?
+  secretaryName    String?  @default("General Secretary")
+  secretarySignUrl String?
+  isApproved       Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([slug])
+  @@index([userId])
+}
+
+
+model DeletionRequest {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason    String?
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
 }
 
 model EmailOtp {
@@ -108,6 +194,15 @@ model EmailOtp {
   createdAt DateTime @default(now())
 }
 
+model AuthRateLimit {
+  key        String   @id
+  count      Int      @default(0)
+  windowStart DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([windowStart])
+}
+
 model Profile {
   id          String      @id @default(cuid())
   userId      String      @unique
@@ -116,6 +211,9 @@ model Profile {
   weightClass WeightClass
   clubId      String?
   club        Club?       @relation(fields: [clubId], references: [id])
+  phoneNumber String?
+  coachPhone  String?
+  coachName   String?
 }
 
 model Club {
@@ -137,6 +235,9 @@ model Membership {
   cardNumber    String         @unique
   startDate     DateTime       @default(now())
   endDate       DateTime
+  idCardPdfUrl  String?
+  badgeUrl      String?
+  securityHash  String?
 
   @@index([status, endDate])
 }
@@ -155,22 +256,26 @@ model Event {
   posterUrl         String?
   registrations     MeetRegistration[]
   results           Result[]
+  nationalRecords   NationalRecord[]
+  refereeAssignments RefereeAssignment[]
 
   @@index([status, date])
 }
 
 model MeetRegistration {
-  id         String        @id @default(cuid())
-  userId     String
-  eventId    String
-  division   Division      @default(OPEN)
-  equipment  EquipmentType @default(RAW)
-  status     MeetStatus    @default(PENDING_PAYMENT)
-  paymentRef String?
-  bodyweight Float?
-  lotNumber  Int?
-  user       User          @relation(fields: [userId], references: [id])
-  event      Event         @relation(fields: [eventId], references: [id])
+  id           String        @id @default(cuid())
+  userId       String
+  eventId      String
+  division     Division      @default(OPEN)
+  equipment    EquipmentType @default(RAW)
+  status       MeetStatus    @default(PENDING_PAYMENT)
+  paymentRef   String?
+  bodyweight   Float?
+  lotNumber    Int?
+  contactPhone String?
+  coachPhone   String?
+  user         User          @relation(fields: [userId], references: [id])
+  event        Event         @relation(fields: [eventId], references: [id])
 
   @@unique([userId, eventId])
   @@index([eventId, status])
@@ -212,7 +317,9 @@ model NationalRecord {
   gender       Gender
   weight       Float
   athleteId    String
+  athlete      User          @relation(fields: [athleteId], references: [id], onDelete: Cascade)
   meetId       String
+  meet         Event         @relation(fields: [meetId], references: [id], onDelete: Cascade)
   dateSet      DateTime
 
   @@unique([liftType, weightClass, division, equipment, gender])
@@ -225,6 +332,11 @@ model Certificate {
   userId           String
   eventId          String
   issueDate        DateTime @default(now())
+  pdfUrl           String?
+  badgeUrl         String?
+  securityHash     String?
+  rank             Int?
+  medal            String?
 
   @@index([verificationCode])
 }
@@ -263,3 +375,89 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([adminId, timestamp])
 }
+
+enum RefereeCategory {
+  STATE_CAT_2
+  NATIONAL_CAT_2
+  NATIONAL_CAT_1
+  IPF_INTERNATIONAL
+}
+
+enum OfficialRole {
+  CHIEF_REFEREE
+  SIDE_REFEREE_LEFT
+  SIDE_REFEREE_RIGHT
+  JURY_PRESIDENT
+  JURY_MEMBER
+  TECHNICAL_CONTROLLER
+}
+
+model RefereeProfile {
+  id                String              @id @default(cuid())
+  userId            String              @unique
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  licenseNumber     String              @unique
+  category          RefereeCategory     @default(NATIONAL_CAT_2)
+  stateAffiliation  String              @default("Gujarat")
+  isActive          Boolean             @default(true)
+  totalMeetsJudged  Int                 @default(0)
+  licenseValidUntil DateTime
+  assignments       RefereeAssignment[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([category, stateAffiliation])
+  @@index([userId])
+}
+
+model RefereeAssignment {
+  id               String          @id @default(cuid())
+  refereeProfileId String
+  refereeProfile   RefereeProfile  @relation(fields: [refereeProfileId], references: [id], onDelete: Cascade)
+  eventId          String
+  event            Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  platformName     String          @default("Platform 1")
+  role             OfficialRole    @default(CHIEF_REFEREE)
+  flightGroup      String?         @default("Flight A")
+  shiftDate        DateTime
+  status           String          @default("ASSIGNED")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@unique([refereeProfileId, eventId, role])
+  @@index([eventId, platformName])
+  @@index([refereeProfileId])
+}
+
+model WhatsappQueueAlertLog {
+  id            String   @id @default(cuid())
+  meetId        String
+  lifterId      String
+  lifterName    String
+  phoneNumber   String
+  queuePosition String   // "ON_PLATFORM" | "IN_THE_HOLE" | "IN_THE_RACK"
+  attemptInfo   String
+  messageText   String
+  channel       String   // "TWILIO_API" | "MANUAL_WA_ME" | "SIMULATION"
+  status        String   // "SENT" | "DELIVERED" | "CLICKED" | "FAILED"
+  errorDetails  String?
+  sentByRole    String?  // "ADMIN" | "COACH" | "SYSTEM" | "SUPER_ADMIN"
+  createdAt     DateTime @default(now())
+
+  @@index([meetId, createdAt])
+  @@index([lifterId])
+}
+
+model WhatsappSaaSConfig {
+  id                    String   @id @default("default")
+  twilioAccountSid      String?
+  twilioAuthToken       String?
+  twilioPhoneNumber     String?  @default("whatsapp:+14155238886")
+  interaktApiKey        String?
+  isAutoDispatchEnabled Boolean  @default(false)
+  alertCurtainMinutes   Int      @default(3)
+  fallbackToManual      Boolean  @default(true)
+  customMessageTemplate String?
+  updatedAt             DateTime @updatedAt
+}
+

@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "postinstall": "prisma generate",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "setup:superadmin": "node scripts/setup-super-admin.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
@@ -20,8 +23,10 @@
     "inngest": "^4.20.0",
     "lucide-react": "^1.40.0",
     "next": "16.3.4",
-    "next-auth": "^5.0.0-beta.32",
+    "next-auth": "5.0.0-beta.32",
+    "pdf-lib": "^1.17.1",
     "pg": "^8.23.0",
+    "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "resend": "^6.26.0",
@@ -34,13 +39,13 @@
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "prisma": "^7.10.0",
     "tailwindcss": "^4",
-    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
