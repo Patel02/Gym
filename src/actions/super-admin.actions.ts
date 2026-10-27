@@ -710,6 +710,7 @@ export async function initializeFirstSuperAdminAction(data: {
               name: parsed.data.name,
               isActive: true,
               permissions: [...ALL_PERMISSIONS],
+              mustChangePassword: true,
             },
           });
         } else {
@@ -721,6 +722,7 @@ export async function initializeFirstSuperAdminAction(data: {
               role: "SUPER_ADMIN",
               isActive: true,
               permissions: [...ALL_PERMISSIONS],
+              mustChangePassword: true,
             },
           });
         }

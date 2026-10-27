@@ -72,6 +72,7 @@ async function main() {
           name,
           isActive: true,
           permissions,
+          mustChangePassword: true,
         },
         select: { id: true, email: true, name: true, role: true },
       });
@@ -85,6 +86,7 @@ async function main() {
         role: "SUPER_ADMIN",
         isActive: true,
         permissions,
+        mustChangePassword: true,
       },
       select: { id: true, email: true, name: true, role: true },
     });

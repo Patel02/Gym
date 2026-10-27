@@ -1,5 +1,15 @@
 import { inngest, resend } from "@/inngest/client";
+import { escapeHtml } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
+import { z } from "zod";
+
+const credentialEventSchema = z
+  .object({
+    userId: z.string().min(1).optional(),
+    membershipId: z.string().min(1).optional(),
+  })
+  .refine((data) => data.userId || data.membershipId);
 
 export const generateCredentialsWorker = inngest.createFunction(
   {
@@ -12,17 +22,24 @@ export const generateCredentialsWorker = inngest.createFunction(
       { event: "membership/approved" },
     ],
   },
-  async ({ event, step }: any) => {
-    const { userId, membershipId } = event.data;
+  async ({ event, step }) => {
+    const parsedEvent = credentialEventSchema.safeParse(event.data);
+    if (!parsedEvent.success) {
+      throw new Error("Invalid credential-generation event.");
+    }
+    const { userId, membershipId } = parsedEvent.data;
 
     // 1. Fetch user, profile, active federation branding, and membership details
     const user = await step.run("fetch-user-data", async () => {
+      const userFilters: Prisma.UserWhereInput[] = [];
+      if (userId) userFilters.push({ id: userId });
+      if (membershipId) {
+        userFilters.push({ memberships: { some: { id: membershipId } } });
+      }
+
       return await prisma.user.findFirst({
         where: {
-          OR: [
-            userId ? { id: userId } : undefined,
-            membershipId ? { memberships: { some: { id: membershipId } } } : undefined,
-          ].filter(Boolean) as any[],
+          OR: userFilters,
         },
         include: {
           profile: true,
@@ -90,60 +107,56 @@ export const generateCredentialsWorker = inngest.createFunction(
     });
 
     // 3. Dispatch Email with Digital Badge & Credentials via Resend
-    await step.run("send-credential-email", async () => {
+    const emailResult = await step.run("send-credential-email", async () => {
       if (!user.email) {
-        console.warn("[Inngest] User has no email on file, skipping email dispatch.");
-        return { skipped: true, reason: "No email on user profile" };
+        return { delivered: false, skipped: true, reason: "No email address is on file." };
       }
 
-      if (!resend) {
-        console.log(`[Inngest] Resend API key not configured. Mocking email delivery to: ${user.email}`, {
-          payload: certificatePayload,
-        });
-        return { mocked: true, recipient: user.email };
+      const fromEmail = process.env.RESEND_FROM_EMAIL;
+      if (!resend || !fromEmail) {
+        throw new Error("Resend email delivery is not configured.");
       }
 
-      try {
-        const emailResult = await resend.emails.send({
-          from: "Federation Credentials <credentials@resend.dev>",
-          to: user.email,
-          subject: `🏆 Your Official ${branding.federationName} Digital ID & Certificate`,
-          html: `
-            <div style="font-family: Arial, sans-serif; background-color: #080808; color: #ffffff; padding: 40px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid #C9A227;">
-              <div style="text-align: center; margin-bottom: 20px;">
-                <img src="${branding.logoUrl}" alt="Association Logo" style="width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px;" />
-                <h2 style="color: #C9A227; text-transform: uppercase; margin: 0;">${branding.federationName}</h2>
-                <p style="color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 2px;">Official Ratified Accreditation</p>
-              </div>
-              
-              <p style="color: #ccc; font-size: 14px;">Dear <b>${user.name || "Athlete"}</b>,</p>
-              <p style="color: #ccc; font-size: 14px; line-height: 1.6;">Your annual federation membership has been successfully approved. Your official digital ID pass and competition certificate have been generated with embedded cryptographic verification.</p>
-              
-              <div style="background-color: #141414; border: 1px solid #333; padding: 20px; text-align: center; border-radius: 8px; margin: 30px 0;">
-                <span style="font-size: 12px; color: #888; text-transform: uppercase; display: block; margin-bottom: 8px;">Membership ID Pass Code</span>
-                <span style="font-size: 20px; font-family: monospace; font-weight: bold; color: #E6501B; letter-spacing: 3px;">${certificatePayload.cardNumber}</span>
-              </div>
-
-              <div style="text-align: center; margin-top: 30px;">
-                <a href="${certificatePayload.verificationUrl}" style="background-color: #E6501B; color: #000000; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 6px; text-transform: uppercase; font-size: 12px; display: inline-block;">Verify Authenticity Online</a>
-              </div>
-
-              <p style="color: #666; font-size: 10px; text-align: center; margin-top: 40px;">Signed digitally by President ${branding.presidentName} & Secretary General ${branding.secretaryName}.</p>
+      const emailResult = await resend.emails.send({
+        from: fromEmail,
+        to: user.email,
+        subject: `Your Official ${branding.federationName} Digital ID & Certificate`,
+        html: `
+          <div style="font-family: Arial, sans-serif; background-color: #080808; color: #ffffff; padding: 40px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid #C9A227;">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <img src="${escapeHtml(branding.logoUrl ?? "")}" alt="Association Logo" style="width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px;" />
+              <h2 style="color: #C9A227; text-transform: uppercase; margin: 0;">${escapeHtml(branding.federationName)}</h2>
+              <p style="color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 2px;">Official Ratified Accreditation</p>
             </div>
-          `,
-        });
+            
+            <p style="color: #ccc; font-size: 14px;">Dear <b>${escapeHtml(user.name || "Athlete")}</b>,</p>
+            <p style="color: #ccc; font-size: 14px; line-height: 1.6;">Your annual federation membership has been successfully approved. Your official digital ID pass and competition certificate have been generated with embedded cryptographic verification.</p>
+            
+            <div style="background-color: #141414; border: 1px solid #333; padding: 20px; text-align: center; border-radius: 8px; margin: 30px 0;">
+              <span style="font-size: 12px; color: #888; text-transform: uppercase; display: block; margin-bottom: 8px;">Membership ID Pass Code</span>
+              <span style="font-size: 20px; font-family: monospace; font-weight: bold; color: #E6501B; letter-spacing: 3px;">${escapeHtml(certificatePayload.cardNumber)}</span>
+            </div>
 
-        return { success: true, emailResult };
-      } catch (err: any) {
-        console.error("[Inngest] Resend email dispatch failed:", err?.message || err);
-        return { success: false, error: err?.message || String(err) };
+            <div style="text-align: center; margin-top: 30px;">
+              <a href="${escapeHtml(certificatePayload.verificationUrl)}" style="background-color: #E6501B; color: #000000; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 6px; text-transform: uppercase; font-size: 12px; display: inline-block;">Verify Authenticity Online</a>
+            </div>
+
+            <p style="color: #666; font-size: 10px; text-align: center; margin-top: 40px;">Signed digitally by President ${escapeHtml(branding.presidentName)} &amp; Secretary General ${escapeHtml(branding.secretaryName)}.</p>
+          </div>
+        `,
+      });
+      if (emailResult.error || !emailResult.data?.id) {
+        throw new Error("Resend could not confirm credential email delivery.");
       }
+
+      return { delivered: true, skipped: false, messageId: emailResult.data.id };
     });
 
     return {
       success: true,
       userId: user.id,
       cardNumber: certificatePayload.cardNumber,
+      emailDelivered: emailResult.delivered,
     };
   }
 );

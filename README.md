@@ -21,7 +21,8 @@ Federation Gym is a powerlifting federation platform built with Next.js, TypeScr
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Do not use `prisma db push` against production. Apply reviewed database migrations in production.
+Do not use `prisma db push` against production. Apply reviewed database migrations with `npx prisma migrate deploy`.
+The original database schema predates the checked-in migration history. Baseline an existing production database before using `migrate deploy`; these migrations are incremental security changes, not a full initial schema.
 
 ## Environment variables
 
@@ -58,6 +59,7 @@ Keep `.env` and deployment secrets private. If a real secret has been exposed, r
 Installing dependencies runs `prisma generate` automatically.
 
 For super-admin setup, set `SUPERADMIN_EMAIL` and `SUPERADMIN_PASSWORD` in the local environment first. Set `SUPERADMIN_NAME` optionally. Never pass a password as a command-line argument.
+Super-admin accounts created or reset by the setup flow must change that password before using the rest of the app.
 
 ## Project layout
 

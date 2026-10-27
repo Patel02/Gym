@@ -13,7 +13,7 @@ const pillars = [
 
 export default function Philosophy() {
   return (
-    <section id="philosophy" className="relative z-10 w-full border-b border-white/5 bg-gym-black py-12 md:py-16 lg:py-20 flex flex-col items-center">
+    <section id="philosophy" className="relative z-10 w-full border-b border-white/5 bg-gym-black py-16 md:py-20 lg:py-24 flex flex-col items-center">
 
       {/* ── Centered section label ── */}
       <motion.div

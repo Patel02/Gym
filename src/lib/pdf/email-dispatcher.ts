@@ -49,15 +49,14 @@ export async function dispatchIdCardEmail(options: DispatchIdCardEmailOptions): 
   messageId?: string;
   error?: string;
 }> {
-  if (!resend) {
-    console.warn("Resend client not configured. Skipping email dispatch.");
-    return { delivered: false, error: "RESEND_API_KEY not configured" };
+  const fromEmail = process.env.RESEND_FROM_EMAIL;
+  if (!resend || !fromEmail) {
+    throw new Error("Resend email delivery is not configured.");
   }
 
   const safeName = escapeHtml(options.recipientName);
   const safeCard = escapeHtml(options.cardNumber);
   const safeHash = escapeHtml(options.shortHash);
-  const fromEmail = process.env.RESEND_FROM_EMAIL || "Federation <noreply@yourfederation.com>";
 
   const badgeBase64 = Buffer.from(options.badgeSvg).toString("base64");
   const badgeDataUri = `data:image/svg+xml;base64,${badgeBase64}`;
@@ -160,8 +159,7 @@ export async function dispatchIdCardEmail(options: DispatchIdCardEmailOptions): 
 </html>
   `;
 
-  try {
-    const result = await resend.emails.send({
+  const result = await resend.emails.send({
       from: fromEmail,
       to: options.recipientEmail,
       subject: `Official Athlete ID Card & Digital Badge [${options.cardNumber}]`,
@@ -174,16 +172,10 @@ export async function dispatchIdCardEmail(options: DispatchIdCardEmailOptions): 
       ],
     });
 
-    if (result.error) {
-      console.warn("Resend email delivery notice:", result.error);
-      return { delivered: false, error: result.error.message };
-    }
-
-    return { delivered: true, messageId: result.data?.id };
-  } catch (err: any) {
-    console.warn("Email dispatcher encountered an error:", err);
-    return { delivered: false, error: err.message };
+  if (result.error || !result.data?.id) {
+    throw new Error("Resend could not confirm athlete ID card delivery.");
   }
+  return { delivered: true, messageId: result.data.id };
 }
 
 /**
@@ -194,9 +186,9 @@ export async function dispatchCertificateEmail(options: DispatchCertificateEmail
   messageId?: string;
   error?: string;
 }> {
-  if (!resend) {
-    console.warn("Resend client not configured. Skipping email dispatch.");
-    return { delivered: false, error: "RESEND_API_KEY not configured" };
+  const fromEmail = process.env.RESEND_FROM_EMAIL;
+  if (!resend || !fromEmail) {
+    throw new Error("Resend email delivery is not configured.");
   }
 
   const safeName = escapeHtml(options.recipientName);
@@ -204,7 +196,6 @@ export async function dispatchCertificateEmail(options: DispatchCertificateEmail
   const safeMedal = escapeHtml(options.medalText);
   const safeCode = escapeHtml(options.verificationCode);
   const safeHash = escapeHtml(options.shortHash);
-  const fromEmail = process.env.RESEND_FROM_EMAIL || "Federation <noreply@yourfederation.com>";
 
   const badgeBase64 = Buffer.from(options.badgeSvg).toString("base64");
   const badgeDataUri = `data:image/svg+xml;base64,${badgeBase64}`;
@@ -322,8 +313,7 @@ export async function dispatchCertificateEmail(options: DispatchCertificateEmail
 </html>
   `;
 
-  try {
-    const result = await resend.emails.send({
+  const result = await resend.emails.send({
       from: fromEmail,
       to: options.recipientEmail,
       subject: `🏆 Official Competition Certificate & Podium Badge [${options.verificationCode}]`,
@@ -336,14 +326,8 @@ export async function dispatchCertificateEmail(options: DispatchCertificateEmail
       ],
     });
 
-    if (result.error) {
-      console.warn("Resend email delivery notice:", result.error);
-      return { delivered: false, error: result.error.message };
-    }
-
-    return { delivered: true, messageId: result.data?.id };
-  } catch (err: any) {
-    console.warn("Email dispatcher encountered an error:", err);
-    return { delivered: false, error: err.message };
+  if (result.error || !result.data?.id) {
+    throw new Error("Resend could not confirm certificate delivery.");
   }
+  return { delivered: true, messageId: result.data.id };
 }

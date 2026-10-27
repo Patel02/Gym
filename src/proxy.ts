@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import NextAuth from "next-auth";
 import authConfig from "@/auth.config";
+import { prisma } from "@/lib/prisma";
 
 const { auth } = NextAuth(authConfig);
 
@@ -9,7 +10,7 @@ const adminRoutes = ["/admin"];
 const protectedRoutes = ["/dashboard"];
 const refereeRoutes = ["/referee/dashboard"];
 
-export default auth((request) => {
+export default auth(async (request) => {
   const { nextUrl } = request;
   const isLoggedIn = Boolean(request.auth);
   const role = request.auth?.user?.role;
@@ -18,6 +19,29 @@ export default auth((request) => {
   const isAuthRoute = pathname === "/login" || pathname === "/register";
   const isRefereeAuthRoute =
     pathname === "/referee/login" || pathname === "/referee/register";
+  let mustChangePassword = request.auth?.user?.mustChangePassword === true;
+  if (role === "SUPER_ADMIN" && request.auth?.user?.id) {
+    const account = await prisma.user.findUnique({
+      where: { id: request.auth.user.id },
+      select: { isActive: true, mustChangePassword: true },
+    });
+    if (!account?.isActive) {
+      return NextResponse.redirect(new URL("/login", nextUrl));
+    }
+    mustChangePassword ||= account.mustChangePassword;
+  }
+
+  if (mustChangePassword && pathname !== "/change-password") {
+    return NextResponse.redirect(new URL("/change-password", nextUrl));
+  }
+  if (pathname === "/change-password") {
+    if (mustChangePassword) return NextResponse.next();
+    if (!isLoggedIn) return NextResponse.redirect(new URL("/login", nextUrl));
+    if (role === "SUPER_ADMIN") return NextResponse.redirect(new URL("/super-admin", nextUrl));
+    if (role === "ADMIN") return NextResponse.redirect(new URL("/admin", nextUrl));
+    if (role === "REFEREE") return NextResponse.redirect(new URL("/referee/dashboard", nextUrl));
+    return NextResponse.redirect(new URL("/dashboard", nextUrl));
+  }
 
   if (pathname.startsWith("/api/auth")) {
     return NextResponse.next();

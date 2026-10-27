@@ -1,28 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireUserRole } from "@/lib/authz";
+import { consumeRateLimit, getClientIp } from "@/lib/rate-limit";
 import { liveStreamHub } from "@/lib/live-stream-hub";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
 const BROADCAST_SECRET = process.env.BROADCAST_FEED_SECRET;
-
-// Rate limiting map (max 30 broadcast updates per 5 seconds per IP)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + 5000 });
-    return true;
-  }
-  if (entry.count >= 30) {
-    return false;
-  }
-  entry.count++;
-  return true;
-}
 
 // XSS Sanitizer for stream text
 function sanitizeText(str?: string): string {
@@ -44,21 +28,31 @@ const BroadcastPayloadSchema = z.object({
     "announcement",
   ]),
   meetId: z.string().optional().default("ALL"),
-  data: z.record(z.string(), z.any()),
+  data: z
+    .record(z.string(), z.unknown())
+    .refine(
+      (data) => Object.keys(data).length <= 50 && JSON.stringify(data).length <= 16_384,
+      "Broadcast data is too large.",
+    ),
 });
 
 export async function POST(req: NextRequest) {
   try {
     // 1. Rate Limit Check
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0] ||
-      req.headers.get("x-real-ip") ||
-      "127.0.0.1";
-
-    if (!checkRateLimit(ip)) {
+    const ip = await getClientIp();
+    const rateLimit = await consumeRateLimit({
+      scope: "live-broadcast",
+      identifier: ip,
+      limit: 30,
+      windowMs: 5000,
+    });
+    if (!rateLimit.allowed) {
       return NextResponse.json(
         { success: false, error: "Too many broadcast requests. Rate limit exceeded." },
-        { status: 429 }
+        {
+          status: 429,
+          headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+        }
       );
     }
 
@@ -99,10 +93,11 @@ export async function POST(req: NextRequest) {
     const { type, meetId, data } = parsed.data;
 
     // 4. Sanitize text fields
-    if (data.lifterName) data.lifterName = sanitizeText(data.lifterName);
-    if (data.infractionReason) data.infractionReason = sanitizeText(data.infractionReason);
-    if (data.headline) data.headline = sanitizeText(data.headline);
-    if (data.subtitle) data.subtitle = sanitizeText(data.subtitle);
+    for (const field of ["lifterName", "infractionReason", "headline", "subtitle"]) {
+      if (typeof data[field] === "string") {
+        data[field] = sanitizeText(data[field]);
+      }
+    }
 
     // 5. Broadcast in real time
     liveStreamHub.broadcast(type, data, meetId);

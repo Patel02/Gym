@@ -21,15 +21,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       const currentUser = await prisma.user.findUnique({
         where: { id: token.sub },
-        select: { role: true, isActive: true },
+        select: { role: true, isActive: true, mustChangePassword: true },
       });
       if (!currentUser?.isActive) {
         delete token.sub;
         delete token.role;
+        delete token.mustChangePassword;
         return token;
       }
 
       token.role = currentUser.role;
+      token.mustChangePassword = currentUser.mustChangePassword;
       return token;
     },
   },
@@ -69,7 +71,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!user?.password || !(await bcrypt.compare(password, user.password))) return null;
         if (!user.isActive) return null;
 
-        return { id: user.id, name: user.name, email: user.email, role: user.role };
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          mustChangePassword: user.mustChangePassword,
+        };
       },
     }),
   ],

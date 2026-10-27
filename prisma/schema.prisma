@@ -92,6 +92,7 @@ model User {
   role          UserRole           @default(MEMBER)
   permissions   Permission[]
   isActive      Boolean            @default(true)
+  mustChangePassword Boolean        @default(false)
   profile       Profile?
   memberships   Membership[]
   registrations MeetRegistration[]
@@ -460,4 +461,3 @@ model WhatsappSaaSConfig {
   customMessageTemplate String?
   updatedAt             DateTime @updatedAt
 }
-

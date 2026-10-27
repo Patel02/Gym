@@ -20,14 +20,15 @@ export const sendWelcomeEmail = inngest.createFunction(
     const { email, name, cardNumber } = event.data;
 
     await step.run("send-email-via-resend", async () => {
-      if (!resend) {
-        throw new Error("RESEND_API_KEY is not configured");
+      const fromEmail = process.env.RESEND_FROM_EMAIL;
+      if (!resend || !fromEmail) {
+        throw new Error("Resend email delivery is not configured.");
       }
 
       const safeName = escapeHtml(name);
       const safeCardNumber = escapeHtml(cardNumber);
       const result = await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL ?? "Federation <noreply@yourfederation.com>",
+        from: fromEmail,
         to: email,
         subject: "Welcome to the Federation - Your Official ID",
         html: `
@@ -43,12 +44,11 @@ export const sendWelcomeEmail = inngest.createFunction(
         `,
       });
 
-      if (result.error) {
-        console.error("Resend API Error:", result.error);
+      if (result.error || !result.data?.id) {
         throw new Error("Failed to send membership email");
       }
 
-      return { success: true, email };
+      return { success: true, delivered: true };
     });
   },
 );

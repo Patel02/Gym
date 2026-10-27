@@ -98,7 +98,7 @@ export default function PowerStats({ initialStats }: { initialStats?: StatItem[]
   }, [initialStats]);
 
   return (
-    <section id="powerstats" className="relative z-30 w-full px-6 md:px-12 lg:px-24 py-6 md:py-8 flex justify-center">
+    <section id="powerstats" className="relative z-30 w-full px-6 md:px-12 lg:px-24 pt-6 pb-32 md:pt-8 md:pb-48 flex justify-center">
       <div className="w-full max-w-7xl">
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
